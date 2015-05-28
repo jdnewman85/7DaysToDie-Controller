@@ -1,5 +1,12 @@
-Don't use a switch
-	Use a list of regexps that get itterated through on a newline event
-Timers!
-	Usefull for any threads to do timery things
-:wqa
+TODO
+	Timers!
+		Usefull for any threads to do timery things
+
+Done
+	Don't use a switch
+		Use a list of regexps that get itterated through on a newline event
+		This was implemented as triggers
+
+Discarded
+	State Machine
+		Use map of states

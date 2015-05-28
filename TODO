@@ -1,0 +1,5 @@
+Don't use a switch
+	Use a list of regexps that get itterated through on a newline event
+Timers!
+	Usefull for any threads to do timery things
+:wqa

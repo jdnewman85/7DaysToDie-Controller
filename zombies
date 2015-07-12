@@ -1,0 +1,43 @@
+#Sparse
+  7 - zombiecrawler
+  11 - spiderzombie
+  12 - burntzombie
+#Reg
+  1 - zombie04
+  3 - zombie05
+  4 - zombie06
+  5 - zombie07
+  13 - zombiegal01
+  14 - zombiegal02
+  15 - zombiegal03
+  16 - zombiegal04
+  17 - zombie02
+#Med
+  19 - fatzombie
+  8 - snowzombie01
+  9 - snowzombie02
+  10 - snowzombie03
+#Hard
+  20 - hornet
+  21 - zombiedog
+  18 - fatzombiecop
+  2 - zombieferal
+#Ehh
+  32 - zombieUMAfemale
+  33 - zombieUMAmale
+
+#Broken
+  6 - zombie01
+#Cars
+  22 - car_Blue
+  23 - car_Orange
+  24 - car_Red
+  25 - car_White
+#Animals
+  26 - animalStag
+  27 - animalRabbit
+  28 - animalPig
+#Supply
+  29 - supplyPlane
+  30 - sc_MeleeWeapons
+  31 - sc_General

@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+
+
 type stateFunc func()
 
 type triggerFunc func(map[string]string)
@@ -51,7 +53,11 @@ type Point struct {
 	z float64
 }
 
+
+
+
 const (
+	//SIMPLE REGULAR EXPRESSIONS
 	//datetime_regex
 	year_regex = `(?P<year>\d\d\d\d)`
 	month_regex = `(?P<month>\d\d)`
@@ -104,9 +110,13 @@ const (
 	playerip_regex = `(?P<playerip>\d+[.]\d+[.]\d+[.]\d+)`
 	playerping_regex = `(?P<playerping>\d+)`
 
+	keystonesnum_regex = `(?P<keystonesnum>\d+)`
+	keystonesprotected_regex = `(?P<keystonesprotected>(False)|(True))`
+	keystoneshardness_regex = `(?P<keystoneshardness>\d+)`
 )
 
 var (
+	//COMPLEX REGULAR EXPRESSIONS
 	date_regex = fmt.Sprintf(`(?P<date>%s-%s-%s)`, year_regex, month_regex, day_regex)
 	time_regex = fmt.Sprintf(`(?P<time>%s:%s:%s)`, hour_regex, minute_regex, second_regex)
 	datetime_regex = fmt.Sprintf(`%sT%s %s`, date_regex, time_regex, millisecond_regex)
@@ -115,28 +125,51 @@ var (
 	ipclient_regex = fmt.Sprintf(`(?:%s|%s)`, ip_regex, client_regex)
 
 	//player_regex
-	playerposition_regex = fmt.Sprintf(`(?P<playerposition>\(%s, %s, %s\))`, playerx_regex, playery_regex, playerz_regex)
-	playerrotation_regex = fmt.Sprintf(`(?P<playerrotation>\(%s, %s, %s\))`, playeru_regex, playerv_regex, playerw_regex)
+	playerposition_regex = fmt.Sprintf(`(?P<playerposition>\(%s, %s, %s\))`,
+		playerx_regex, playery_regex, playerz_regex)
+	playerrotation_regex = fmt.Sprintf(`(?P<playerrotation>\(%s, %s, %s\))`,
+		playeru_regex, playerv_regex, playerw_regex)
 
-	command_regex = fmt.Sprintf(`^%s INF Executing command '(?P<command>.+)' (?:by %s )?from %s$`, datetime_regex, by_regex, ipclient_regex)
+	command_regex = fmt.Sprintf(`^%s INF Executing command '(?P<command>.+)' (?:by %s )?from %s$`,
+		datetime_regex, by_regex, ipclient_regex)
 
-	tick_regex = fmt.Sprintf(`^%s INF Time: %s FPS: %s Heap: %s Max: %s Chunks: %s CGO: %s Ply: %s Zom: %s Ent: %s %s Items: %s$`, datetime_regex, gametime_regex, fps_regex, heap_regex, maxheap_regex, chunks_regex, cgo_regex, playernum_regex, zombienum_regex, entitynum_regex, entitynumpar_regex, itemnum_regex)
+	tick_regex = fmt.Sprintf(`^%s INF Time: %s FPS: %s Heap: %s Max: %s Chunks: %s CGO: %s Ply: %s Zom: %s Ent: %s %s Items: %s$`,
+		datetime_regex, gametime_regex, fps_regex, heap_regex, maxheap_regex, chunks_regex, cgo_regex, playernum_regex, zombienum_regex, entitynum_regex, entitynumpar_regex, itemnum_regex)
 
 	//Each player in a player list (lp) command
-	player_regex = fmt.Sprintf(`^%s. id=%s, %s, pos=%s, rot=%s, remote=%s, health=%s, deaths=%s, zombies=%s, players=%s, score=%s, level=%s, steamid=%s, ip=%s, ping=%s$`, listnum_regex, playerid_regex, playername_regex, playerposition_regex, playerrotation_regex, playerremote_regex, playerhealth_regex, playerdeaths_regex, playerzkills_regex, playerpkills_regex, playerscore_regex, playerlevel_regex, playersteamid_regex, playerip_regex, playerping_regex)
+	player_regex = fmt.Sprintf(`^%s. id=%s, %s, pos=%s, rot=%s, remote=%s, health=%s, deaths=%s, zombies=%s, players=%s, score=%s, level=%s, steamid=%s, ip=%s, ping=%s$`,
+		listnum_regex, playerid_regex, playername_regex, playerposition_regex, playerrotation_regex, playerremote_regex, playerhealth_regex, playerdeaths_regex, playerzkills_regex, playerpkills_regex, playerscore_regex, playerlevel_regex, playersteamid_regex, playerip_regex, playerping_regex)
+
+	//Trigger to prepare for list of land protection blocks
+	keystonetrigger_regex = fmt.Sprintf(`^Player "%s \(%s\)" owns %s keystones \(protected: %s, current hardness multiplier: %s\)$`,
+		playername_regex, playersteamid_regex, keystonesnum_regex, keystonesprotected_regex, keystoneshardness_regex)
+	keystoneendtrigger_regex = fmt.Sprintf(`^Total of %s keystones in the game$`,
+		keystonesnum_regex)
 )
 
+
+//GLOBALS
 var (
 	serverConn net.Conn
 	serverBuffer *bufio.Reader
 
-	triggers = []trigger{
+	mainTriggers = []trigger{
 		trigger{`^Please enter password:$`, nil, password_trigger},
 		trigger{`^Logon successful.$`, nil, login_trigger},
 		trigger{command_regex, nil, command_trigger},
 		trigger{tick_regex, nil, tick_trigger},
 		trigger{player_regex, nil, player_trigger},
+		trigger{keystonetrigger_regex, nil, keystone_trigger},
 	}
+
+	keystoneTriggers = []trigger{
+		//trigger{keystonetrigger_regex, nil, keystone_trigger},
+		//trigger{keystoneendtrigger_regex, nil, keystoneend_trigger},
+	}
+
+	triggers []trigger
+
+	keystoneOwner string
 )
 
 var (
@@ -149,16 +182,22 @@ var (
 	spawnPoints []Point
 	mainBaseHorde bool
 	zombieNum int64
-	zombies = []int{7, 11, 12,
-			1, 3, 4, 5, 13, 14, 15, 16, 17,
-			19, 8, 9, 10,
-			20, 21, 18, 18, 2, 2,
+	zombies = []int{ 1,  2,  3,  4,  5,  6,
+			 7,  8,  9, 10, 11, 12,
+			13, 14, 15, 16, 17, 18,
+			19, 20,
+			27,
+			35, 36,
 		}
 )
 
+
+
+//MAIN
 func main() {
+	triggers = mainTriggers
 	fmt.Println("BEGIN")
-	//fmt.Printf("\n\n\n%s\n\n\n", player_regex)
+	fmt.Printf("\n\n\n%s\n\n\n", keystonetrigger_regex)
 
 	//Compile trigger regexps
 	for i := range triggers {
@@ -213,8 +252,11 @@ func main() {
 	fmt.Println("END")
 }
 
+
+
+//TRIGGER CALLBACKS
 func password_trigger(reMatchMap map[string]string) {
-	fmt.Fprintf(serverConn, "%s\n", "TrumpTikAdmin%")
+	fmt.Fprintf(serverConn, "%s\n", "7Blackrocks1")
 	fmt.Println("Waiting for logon confirm.")
 }
 
@@ -312,10 +354,31 @@ func player_trigger(reMatchMap map[string]string) {
 	tempPlayer.online = true
 }
 
+func keystone_trigger(reMatchMap map[string] string) {
+	fmt.Printf("Listing keystones for: %s(%s) numbering %s protected? %s hardness %s\n",
+	reMatchMap["playername"],
+	reMatchMap["playersteamid"],
+	reMatchMap["keystonesnum"],
+	reMatchMap["keystonesprotected"],
+	reMatchMap["keystoneshardness"])
+
+	keystoneOwner = reMatchMap["playername"]
+	triggers = keystoneTriggers
+}
+
+func keystoneend_trigger(reMatchMap map[string] string) {
+	fmt.Printf("Total keystones: %s\n", reMatchMap["keystonesnum"])
+	triggers = mainTriggers
+}
+
+
+
+//THREAD FUNCTIONS
 func updatePlayerInfo_thread() {
 	//Periodically sends listplayers command, to update player information
 	for {
 		fmt.Fprintf(serverConn, "%s\n", "lp")
+		fmt.Fprintf(serverConn, "%s\n", "listlandprotection")
 		time.Sleep(time.Second*1)
 
 		//TEMP DEBUG

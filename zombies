@@ -1,43 +1,41 @@
-#Sparse
-  7 - zombiecrawler
-  11 - spiderzombie
-  12 - burntzombie
-#Reg
-  1 - zombie04
-  3 - zombie05
-  4 - zombie06
-  5 - zombie07
-  13 - zombiegal01
-  14 - zombiegal02
-  15 - zombiegal03
-  16 - zombiegal04
-  17 - zombie02
-#Med
-  19 - fatzombie
-  8 - snowzombie01
-  9 - snowzombie02
-  10 - snowzombie03
-#Hard
-  20 - hornet
-  21 - zombiedog
+#Use
+  1 - zombie01
+  2 - zombie04
+  3 - zombieferal
+  4 - zombieBoe
+  5 - zombieJoe
+  6 - zombieMoe
+  7 - zombieArlene
+  8 - zombieScreamer
+  9 - zombieDarlene
+  10 - zombieMarlene
+  11 - zombieYo
+  12 - zombieSteve
+  13 - zombieSteveCrawler
+  14 - snowzombie
+  15 - spiderzombie
+  16 - burntzombie
+  17 - zombieNurse
   18 - fatzombiecop
-  2 - zombieferal
-#Ehh
-  32 - zombieUMAfemale
-  33 - zombieUMAmale
+  19 - hornet
+  20 - zombiedog
+  27 - zombieBear
 
-#Broken
-  6 - zombie01
-#Cars
-  22 - car_Blue
-  23 - car_Orange
-  24 - car_Red
-  25 - car_White
-#Animals
-  26 - animalStag
-  27 - animalRabbit
-  28 - animalPig
-#Supply
-  29 - supplyPlane
-  30 - sc_MeleeWeapons
-  31 - sc_General
+  35 - zombieMaleHazmat
+  36 - zombieFemaleHazmat
+
+  21 - car_Blue
+  22 - car_Orange
+  23 - car_Red
+  24 - car_White
+  25 - animalStag
+  26 - animalBear
+  28 - animalRabbit
+  29 - animalChicken
+  30 - animalPig
+  31 - supplyPlane
+  32 - sc_General
+  33 - zombieUMAfemale
+  34 - zombieUMAmale
+  37 - minibike
+

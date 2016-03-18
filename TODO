@@ -1,3 +1,15 @@
+NEWDO
+	AFK Feature
+		Uses playerUpdate_thread
+		Set automatically if player doesn't move at all
+		Set by command
+		If player moves(turns if zombie hits screw this up), turn off afk
+		If player if damaged, and AFK, kick them for their own safety
+	Global hash map?
+		Threads could use this for accessing data?
+			Locks?
+
+
 TODO
 	Timers!
 		Usefull for any threads to do timery things
@@ -5,8 +17,9 @@ TODO
 Done
 	Don't use a switch
 		Use a list of regexps that get itterated through on a newline event
-		This was implemented as triggers
+		/This was implemented as triggers/
 
 Discarded
 	State Machine
 		Use map of states
+		/Used triggers instead/

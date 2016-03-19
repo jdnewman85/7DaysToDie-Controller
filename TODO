@@ -28,6 +28,16 @@ NEW COMMANDS AND STUFFS
 	Can use the web client or own data to check players on map, etc
 	Can watch for spawns, and spawn near to take advantage of AI director stuffs
 	Can change MOTD after player deaths and such
+
+	Can store Admin NPC choices
+	Can teleport admin to specific areas to roleplay
+		Can show notes to the admin to help with remembering character
+	Can possibly point out areas
+	Can keep track of health for npcs and dead/alive
+
+	Can make items and check for them
+
+	Should be able to heal/damage to specifc amounts with some math and a binary search using buffs and power of two amounts
 		
 NEWDO
 	AFK Feature

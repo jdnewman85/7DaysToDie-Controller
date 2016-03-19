@@ -38,6 +38,12 @@ NEW COMMANDS AND STUFFS
 	Can make items and check for them
 
 	Should be able to heal/damage to specifc amounts with some math and a binary search using buffs and power of two amounts
+
+	Need to store data provided by players
+		With a way to edit/clear
+		Simple and tied to steamid or character
+	Need to have easy capability to store some global data for quests and stuff
+	Can I hint at location with air drops or something?
 		
 NEWDO
 	AFK Feature

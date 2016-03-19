@@ -1,3 +1,34 @@
+NEW COMMANDS AND STUFFS
+	Can now specifiy quality of items to give
+		Still dropped by player?
+	Can do buffing and debuffing and create buffs...
+	Can see inventory, and belts
+	Can teleport relative
+	Can spawn on ground (-1)
+	Can set game prefs
+		Freeze zombs
+		Start/Stop run
+		Easier/Difficult
+		Time
+	Look and Position triggers
+	Chat triggers
+	Damage trigger
+	Air drop
+	Can spawn cars and animals
+	Can teleport around and place very specific items/crates
+		Could even do this off of a trigger (like they pick up an item)
+	Can try to attack players
+	Cannot give exp (only to self client)
+	Can enable/disable weather survival
+	Cannot spawn supply crates (client only)
+	Cannot control weather (client only?)
+	Can check proximity to players and zombies and numbers
+	Can make player thirsty or starve
+	Cannot see player temp or buffs?
+	Can use the web client or own data to check players on map, etc
+	Can watch for spawns, and spawn near to take advantage of AI director stuffs
+	Can change MOTD after player deaths and such
+		
 NEWDO
 	AFK Feature
 		Uses playerUpdate_thread
@@ -5,9 +36,24 @@ NEWDO
 		Set by command
 		If player moves(turns if zombie hits screw this up), turn off afk
 		If player if damaged, and AFK, kick them for their own safety
+	Respond to disconnect events?
+	Periodically save world?
+	Item and location based quests?
+	Define triggers in game? (corners for box?)
+	Look/Gaze based triggers can be made with position/rotation data
+	
 	Global hash map?
 		Threads could use this for accessing data?
 			Locks?
+IDEAS
+	Item carrying effects
+		Periodic check of special items in inventory
+	Inventory spots could be reserved for special use
+		Input of a number
+		Input of a type (what type of object)
+		Shop?
+		Crafting?
+			
 
 
 TODO

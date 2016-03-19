@@ -14,6 +14,12 @@ import (
 
 
 
+type Point struct {
+	x float64
+	y float64
+	z float64
+}
+
 type stateFunc func()
 
 type triggerFunc func(map[string]string)
@@ -35,7 +41,7 @@ type Player struct {
 	ip string
 	ping uint64
 
-	x, y, z float64
+	x, y, z float64 //TODO Point types?
 	u, v, w float64
 
 	//TEMP OPT Stop using 64 bits, and do the conversions where needed
@@ -45,12 +51,9 @@ type Player struct {
 	pKills uint64
 	score uint64
 	level uint64
-}
 
-type Point struct {
-	x float64
-	y float64
-	z float64
+	//Added stats
+	blinkLocations []*Point
 }
 
 
@@ -130,6 +133,11 @@ var (
 	playerrotation_regex = fmt.Sprintf(`(?P<playerrotation>\(%s, %s, %s\))`,
 		playeru_regex, playerv_regex, playerw_regex)
 
+	//denied_command_regex
+	//TODO Make command a simple regex above?
+	denied_command_regex = fmt.Sprintf(`^%s INF Denying command '(?P<command>.+)' from client %s$`,
+		datetime_regex, playername_regex)
+	//command_regex
 	command_regex = fmt.Sprintf(`^%s INF Executing command '(?P<command>.+)' (?:by %s )?from %s$`,
 		datetime_regex, by_regex, ipclient_regex)
 
@@ -157,6 +165,7 @@ var (
 		trigger{`^Please enter password:$`, nil, password_trigger},
 		trigger{`^Logon successful.$`, nil, login_trigger},
 		trigger{command_regex, nil, command_trigger},
+		trigger{denied_command_regex, nil, command_trigger}, //TODO TEMP Dif function for player commands?
 		trigger{tick_regex, nil, tick_trigger},
 		trigger{player_regex, nil, player_trigger},
 		trigger{keystonetrigger_regex, nil, keystone_trigger},
@@ -254,7 +263,7 @@ func main() {
 
 
 
-//TRIGGER CALLBACKS
+//TRIGGERS CALLBACKS
 func password_trigger(reMatchMap map[string]string) {
 	fmt.Fprintf(serverConn, "%s\n", "7Blackrocks1")
 	fmt.Println("Waiting for logon confirm.")
@@ -264,6 +273,7 @@ func login_trigger(reMatchMap map[string]string) {
 	fmt.Println("Waiting for commands.")
 }
 
+//COMMANDS
 func command_trigger(reMatchMap map[string]string) {
 	fmt.Printf("Recieved a command: %s\n", reMatchMap["command"])
 	switch reMatchMap["command"] {
@@ -271,37 +281,37 @@ func command_trigger(reMatchMap map[string]string) {
 		fmt.Fprintf(serverConn, "%s\n", "lp")
 	case "pm storeSpawnPoint", "pm ssp":
 		if reMatchMap["steamid"] != "" {
-			tempPlayer := playerMap[reMatchMap["steamid"]]
-			fmt.Fprintf(serverConn, "pm %s \"Point Added\"\n", tempPlayer.name)
-			spawnPoints = append(spawnPoints, Point{tempPlayer.x, tempPlayer.y, tempPlayer.z})
+			player := playerMap[reMatchMap["steamid"]]
+			fmt.Fprintf(serverConn, "pm %s \"Point Added\"\n", player.name)
+			spawnPoints = append(spawnPoints, Point{player.x, player.y, player.z})
 			fmt.Printf("SPAWN POINTS: \n%v\n\n", spawnPoints)
 		}
 	case "pm resetSpawnPoints", "pm rsp":
 		if reMatchMap["steamid"] != "" {
-			tempPlayer := playerMap[reMatchMap["steamid"]]
-			fmt.Fprintf(serverConn, "pm %s \"Spawn Points Reset\"\n", tempPlayer.name)
+			player := playerMap[reMatchMap["steamid"]]
+			fmt.Fprintf(serverConn, "pm %s \"Spawn Points Reset\"\n", player.name)
 			spawnPoints = nil
 			fmt.Printf("SPAWN POINTS: \n%v\n\n", spawnPoints)
 		}
 	case "pm spawnTest", "pm st":
 		fmt.Printf("SPAWN TEST\n")
 		if reMatchMap["steamid"] != "" {
-			tempPlayer := playerMap[reMatchMap["steamid"]]
-			fmt.Fprintf(serverConn, "pm %s \"Spawning zombies!\"\n", tempPlayer.name)
+			player := playerMap[reMatchMap["steamid"]]
+			fmt.Fprintf(serverConn, "pm %s \"Spawning zombies!\"\n", player.name)
 
 			//Store current position
-			tempX := tempPlayer.x
-			tempY := tempPlayer.y
-			tempZ := tempPlayer.z
+			tempX := player.x
+			tempY := player.y
+			tempZ := player.z
 
 			for _, tempPoint := range spawnPoints {
-				fmt.Fprintf(serverConn, "tele %s %d %d %d\n", tempPlayer.id, int(tempPoint.x), int(tempPoint.y)+5, int(tempPoint.z))
+				fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(tempPoint.x), int(tempPoint.y)+5, int(tempPoint.z))
 				//time.Sleep(time.Second/2)
-				fmt.Fprintf(serverConn, "se %s 17\n", tempPlayer.id)
+				fmt.Fprintf(serverConn, "se %s 17\n", player.id)
 			}
 
 			//Restore position
-			fmt.Fprintf(serverConn, "tele %s %d %d %d\n", tempPlayer.id, int(tempX), int(tempY), int(tempZ))
+			fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(tempX), int(tempY), int(tempZ))
 		}
 	case "pm mainBaseHorde", "pm mbh":
 		fmt.Printf("Main Base Horde On\n")
@@ -309,6 +319,22 @@ func command_trigger(reMatchMap map[string]string) {
 	case "pm stopMainBaseHorde", "pm smbh":
 		fmt.Printf("Main Base Horde Off\n")
 		mainBaseHorde = false
+	case "pm blink":
+					fmt.Printf("Blink Command!\n")
+					//TEMP TODO make different system
+					playerName := reMatchMap["playername"] //OPT Need whitespace
+					player := playerMap[playerName]
+					if player.blinkLocations == nil {
+						//No points
+						//TODO TEMP Diff
+						player.blinkLocations = append(player.blinkLocations, &Point{player.x, player.y, player.z})
+					} else {
+						blinkLocation := player.blinkLocations[0]
+						//Points
+						//TODO TEMP for now, just go to first
+						//TODO z position?
+						fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(blinkLocation.x), int(blinkLocation.y), int(blinkLocation.z)+2) //TODO TEMP Magic number
+					}
 	}
 }
 
@@ -322,36 +348,36 @@ func player_trigger(reMatchMap map[string]string) {
 	//fmt.Printf("Player Here!\n\n%v\n\n", reMatchMap)
 	//Update player information
 	playerId := reMatchMap["playerid"]
-	tempPlayer := playerMap[playerId]
-	if tempPlayer == nil {
-		tempPlayer = new(Player)
-		playerMap[playerId] = tempPlayer
-		playerMap[reMatchMap["playername"]] = tempPlayer
-		playerMap[reMatchMap["playersteamid"]] = tempPlayer
+	player := playerMap[playerId]
+	if player == nil {
+		player = new(Player)
+		playerMap[playerId] = player
+		playerMap[reMatchMap["playername"]] = player
+		playerMap[reMatchMap["playersteamid"]] = player
 
 	}
 
 	//Update info
-	tempPlayer.id = reMatchMap["playerid"]
-	tempPlayer.name = reMatchMap["playername"]
-	tempPlayer.steamId = reMatchMap["playersteamid"]
-	tempPlayer.ip = reMatchMap["playerip"]
-	tempPlayer.ping, _ = strconv.ParseUint(reMatchMap["playerping"], 10, 32)
-	tempPlayer.x, _ = strconv.ParseFloat(reMatchMap["playerx"], 64)
-	tempPlayer.y, _ = strconv.ParseFloat(reMatchMap["playery"], 64)
-	tempPlayer.z, _ = strconv.ParseFloat(reMatchMap["playerz"], 64)
-	tempPlayer.u, _ = strconv.ParseFloat(reMatchMap["playeru"], 64)
-	tempPlayer.v, _ = strconv.ParseFloat(reMatchMap["playerv"], 64)
-	tempPlayer.w, _ = strconv.ParseFloat(reMatchMap["playerw"], 64)
-	tempPlayer.remote, _ = strconv.ParseBool(reMatchMap["playerremote"])
-	tempPlayer.health, _ = strconv.ParseUint(reMatchMap["playerhealth"], 10, 32)
-	tempPlayer.deaths, _ = strconv.ParseUint(reMatchMap["playerdeaths"], 10, 32)
-	tempPlayer.zKills, _ = strconv.ParseUint(reMatchMap["playerzkills"], 10, 32)
-	tempPlayer.pKills, _ = strconv.ParseUint(reMatchMap["playerpkills"], 10, 32)
-	tempPlayer.score, _ = strconv.ParseUint(reMatchMap["playerscore"], 10, 32)
-	tempPlayer.level, _ = strconv.ParseUint(reMatchMap["playerlevel"], 10, 32)
-	tempPlayer.lastUpdate = milliseconds
-	tempPlayer.online = true
+	player.id = reMatchMap["playerid"]
+	player.name = reMatchMap["playername"]
+	player.steamId = reMatchMap["playersteamid"]
+	player.ip = reMatchMap["playerip"]
+	player.ping, _ = strconv.ParseUint(reMatchMap["playerping"], 10, 32)
+	player.x, _ = strconv.ParseFloat(reMatchMap["playerx"], 64)
+	player.y, _ = strconv.ParseFloat(reMatchMap["playery"], 64)
+	player.z, _ = strconv.ParseFloat(reMatchMap["playerz"], 64)
+	player.u, _ = strconv.ParseFloat(reMatchMap["playeru"], 64)
+	player.v, _ = strconv.ParseFloat(reMatchMap["playerv"], 64)
+	player.w, _ = strconv.ParseFloat(reMatchMap["playerw"], 64)
+	player.remote, _ = strconv.ParseBool(reMatchMap["playerremote"])
+	player.health, _ = strconv.ParseUint(reMatchMap["playerhealth"], 10, 32)
+	player.deaths, _ = strconv.ParseUint(reMatchMap["playerdeaths"], 10, 32)
+	player.zKills, _ = strconv.ParseUint(reMatchMap["playerzkills"], 10, 32)
+	player.pKills, _ = strconv.ParseUint(reMatchMap["playerpkills"], 10, 32)
+	player.score, _ = strconv.ParseUint(reMatchMap["playerscore"], 10, 32)
+	player.level, _ = strconv.ParseUint(reMatchMap["playerlevel"], 10, 32)
+	player.lastUpdate = milliseconds
+	player.online = true
 }
 
 func keystone_trigger(reMatchMap map[string] string) {
@@ -378,14 +404,14 @@ func updatePlayerInfo_thread() {
 	//Periodically sends listplayers command, to update player information
 	for {
 		fmt.Fprintf(serverConn, "%s\n", "lp")
-		fmt.Fprintf(serverConn, "%s\n", "listlandprotection")
+		fmt.Fprintf(serverConn, "%s\n", "listlandprotection") //OPT TODO Move this
 		time.Sleep(time.Second*1)
 
 		//TEMP DEBUG
 		/*
 		fmt.Printf("\n\n\n%v\n", playerMap)
-		for _, tempPlayer := range playerMap {
-			fmt.Printf("%v\n", tempPlayer)
+		for _, player := range playerMap {
+			fmt.Printf("%v\n", player)
 		}
 		*/
 	}

@@ -30,6 +30,11 @@ func player_command_trigger(reMatchMap map[string]string) {
 		}
 
 	//MISC
+	case "reboot":
+		playerName := reMatchMap["playername"]
+		player := playerMap[playerName]
+
+		fmt.Fprintf(serverConn, "say \"%s has started a reboot\"\n", player.name)
 	case "whoami":
 		playerName := reMatchMap["playername"]
 		player := playerMap[playerName]

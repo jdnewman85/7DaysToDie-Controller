@@ -58,3 +58,15 @@ func updatePlayerInfo_thread() {
 	}
 }
 
+func reboot_thread() {
+	for i := 0; i<10; i++ {
+		fmt.Fprintf(serverConn, "say \"Going down in %d seconds!\"\n", 10-i)
+		fmt.Printf("Going down in %d seconds!\n", 10-i)
+		time.Sleep(time.Second * 1)
+	}
+
+	fmt.Fprintf(serverConn, "kickall Bye!\n")
+	fmt.Fprintf(serverConn, "saveworld")
+	time.Sleep(time.Second * 5)
+	fmt.Fprintf(serverConn, "shutdown")
+}

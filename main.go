@@ -288,9 +288,11 @@ func login_trigger(reMatchMap map[string]string) {
 func admin_command_trigger(reMatchMap map[string]string) {
 	//OPT should go ahead and get player object above case, or provide a simple access function for it
 	fmt.Printf("Recieved an admin command: %s\n", reMatchMap["command"])
+
+	fmt.Printf("reMatchMap:'\n%v\n'\n", reMatchMap)
+
 	switch reMatchMap["command"] {
 	case "whoami":
-		fmt.Printf("reMatchMap:'\n%v\n'\n", reMatchMap)
 		if reMatchMap["steamid"] != "" {
 			player := playerMap[reMatchMap["steamid"]]
 			fmt.Fprintf(serverConn, "pm %s \"You are %s, an admin.\"\n", player.name, player.name)
@@ -362,18 +364,19 @@ func admin_command_trigger(reMatchMap map[string]string) {
 //PLAYER COMMANDS
 func player_command_trigger(reMatchMap map[string]string) {
 	fmt.Printf("Recieved a player command: %s\n", reMatchMap["command"])
+
+	fmt.Printf("reMatchMap:'\n%v\n'\n", reMatchMap)
+
 	switch reMatchMap["command"] {
 	case "whoami":
-		if reMatchMap["steamid"] != "" {
-			playerName := reMatchMap["playername"] //OPT Need whitespace
-			player := playerMap[playerName]
+		playerName := reMatchMap["playername"]
+		player := playerMap[playerName]
 
-			fmt.Fprintf(serverConn, "pm %s \"You are %s, a player.\"\n", player.name, player.name)
-		}
+		fmt.Fprintf(serverConn, "pm %s \"You are %s, a player.\"\n", player.name, player.name)
 	case "blink":
 					//TEMP TODO make different system
 					fmt.Printf("Blink Command!\n")
-					playerName := reMatchMap["playername"] //OPT Need whitespace
+					playerName := reMatchMap["playername"]
 					player := playerMap[playerName]
 					if player.blinkLocations == nil {
 						//No points

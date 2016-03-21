@@ -17,21 +17,20 @@ func player_command_trigger(reMatchMap map[string]string) {
 
 		fmt.Fprintf(serverConn, "pm %s \"You are %s, a player.\"\n", player.name, player.name)
 	case "blink":
-					//TEMP TODO make different system
-					fmt.Printf("Blink Command!\n")
-					playerName := reMatchMap["playername"]
-					player := playerMap[playerName]
-					if player.blinkLocations == nil {
-						//No points
-						//TODO TEMP Diff
-						player.blinkLocations = append(player.blinkLocations, &Point{player.x, player.y, player.z})
-					} else {
-						blinkLocation := player.blinkLocations[0]
-						//Points
-						//TODO TEMP for now, just go to first
-						//TODO z position?
-						fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(blinkLocation.x), int(blinkLocation.y), int(blinkLocation.z)+2) //TODO TEMP Magic number
-					}
+		//TEMP TODO make different system
+		fmt.Printf("Blink Command!\n")
+		playerName := reMatchMap["playername"]
+		player := playerMap[playerName]
+		if player.blinkLocations == nil {
+			//No points
+			//TODO TEMP Diff
+			player.blinkLocations = append(player.blinkLocations, &Point{player.x, player.y, player.z})
+		} else {
+			blinkLocation := player.blinkLocations[0]
+			//Points
+			//TODO TEMP for now, just go to first
+			//TODO z position?
+			fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(blinkLocation.x), int(blinkLocation.y), int(blinkLocation.z)+2) //TODO TEMP Magic number
+		}
 	}
 }
-

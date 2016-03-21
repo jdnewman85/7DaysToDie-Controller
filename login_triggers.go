@@ -12,4 +12,3 @@ func password_trigger(reMatchMap map[string]string) {
 func login_trigger(reMatchMap map[string]string) {
 	fmt.Println("Waiting for commands.")
 }
-

@@ -13,14 +13,14 @@ func updatePlayerInfo_thread() {
 	for {
 		fmt.Fprintf(serverConn, "%s\n", "lp")
 		fmt.Fprintf(serverConn, "%s\n", "listlandprotection") //OPT TODO Move this
-		time.Sleep(time.Second*1)
+		time.Sleep(time.Second * 1)
 
 		//TEMP DEBUG
 		/*
-		fmt.Printf("\n\n\n%v\n", playerMap)
-		for _, player := range playerMap {
-			fmt.Printf("%v\n", player)
-		}
+			fmt.Printf("\n\n\n%v\n", playerMap)
+			for _, player := range playerMap {
+				fmt.Printf("%v\n", player)
+			}
 		*/
 	}
 }
@@ -39,12 +39,12 @@ func mainBaseHorde_thread() {
 				centerY := 70
 				centerZ := 2216
 
-				for i := 0; i<20; i++ {
-					randAngle := rand.Float64()*math.Pi
-					randDist := 50.0+rand.Float64()*50.0
-					randX := centerX+int(math.Cos(randAngle)*randDist)
-					randZ := centerZ+int(math.Sin(randAngle)*randDist)
-					randZombie := rand.Intn(len(zombies)-1)
+				for i := 0; i < 20; i++ {
+					randAngle := rand.Float64() * math.Pi
+					randDist := 50.0 + rand.Float64()*50.0
+					randX := centerX + int(math.Cos(randAngle)*randDist)
+					randZ := centerZ + int(math.Sin(randAngle)*randDist)
+					randZombie := rand.Intn(len(zombies) - 1)
 					fmt.Fprintf(serverConn, "tele %s %d %d %d\n", "Scienthsine", randX, centerY, randZ)
 					fmt.Fprintf(serverConn, "se %s %d\n", "Scienthsine", zombies[randZombie])
 				}
@@ -52,7 +52,7 @@ func mainBaseHorde_thread() {
 				//Restore
 				fmt.Fprintf(serverConn, "tele %s %d %d %d\n", "Scienthsine", tempX, tempY, tempZ)
 			}
-			time.Sleep(time.Minute/4)
+			time.Sleep(time.Minute / 4)
 		}
 		time.Sleep(time.Second)
 	}

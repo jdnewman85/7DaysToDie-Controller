@@ -1,47 +1,47 @@
 package main
 
-import(
+import (
 	"fmt"
 )
 
 const (
 	//SIMPLE REGULAR EXPRESSIONS
 	//datetime_regex
-	year_regex = `(?P<year>\d\d\d\d)`
+	year_regex  = `(?P<year>\d\d\d\d)`
 	month_regex = `(?P<month>\d\d)`
-	day_regex = `(?P<day>\d\d)`
+	day_regex   = `(?P<day>\d\d)`
 
-	hour_regex = `(?P<hour>\d\d)`
+	hour_regex   = `(?P<hour>\d\d)`
 	minute_regex = `(?P<minute>\d\d)`
 	second_regex = `(?P<second>\d\d)`
 
 	millisecond_regex = `(?P<millisecond>\d+.\d*)`
 
 	//*_command_regex
-	ip_regex = `(?:(?P<ip>\d+[.]\d+[.]\d+[.]\d+)(?::(?P<port>\d+))?)`
+	ip_regex      = `(?:(?P<ip>\d+[.]\d+[.]\d+[.]\d+)(?::(?P<port>\d+))?)`
 	steamid_regex = `(?P<steamid>\d+)`
 
 	by_regex = `(?P<by>\w+)`
 	//hotword_regex = `(?P<hotword>/w+)` //Gets any hotword
-	admin_hotword_regex = `(?P<hotword>re)`
+	admin_hotword_regex  = `(?P<hotword>re)`
 	player_hotword_regex = `(?P<hotword>pm)`
 
 	//tick_regex
-	gametime_regex = `(?P<gametime>\d+.\d\d)m`
-	fps_regex = `(?P<fps>\d+.\d\d)`
-	heap_regex = `(?P<heap>\d+.\d)MB`
-	maxheap_regex = `(?P<maxheap>\d+.\d)MB`
-	chunks_regex = `(?P<chunks>\d+)`
-	cgo_regex = `(?P<cgo>\d+)`
-	playernum_regex = `(?P<playernum>\d+)`
-	zombienum_regex = `(?P<zombienum>\d+)`
-	entitynum_regex = `(?P<entitynum>\d+)`
+	gametime_regex     = `(?P<gametime>\d+.\d\d)m`
+	fps_regex          = `(?P<fps>\d+.\d\d)`
+	heap_regex         = `(?P<heap>\d+.\d)MB`
+	maxheap_regex      = `(?P<maxheap>\d+.\d)MB`
+	chunks_regex       = `(?P<chunks>\d+)`
+	cgo_regex          = `(?P<cgo>\d+)`
+	playernum_regex    = `(?P<playernum>\d+)`
+	zombienum_regex    = `(?P<zombienum>\d+)`
+	entitynum_regex    = `(?P<entitynum>\d+)`
 	entitynumpar_regex = `\((?P<entitynumpar>\d+)\)`
-	itemnum_regex = `(?P<itemnum>\d+)`
+	itemnum_regex      = `(?P<itemnum>\d+)`
 
 	//player_regex
-	listnum_regex = `(?P<listnum>\d+)`
-	playerid_regex = `(?P<playerid>\d+)`
+	listnum_regex    = `(?P<listnum>\d+)`
+	playerid_regex   = `(?P<playerid>\d+)`
 	playername_regex = `(?P<playername>\w+)`
 
 	playerx_regex = `(?P<playerx>-?\d+.\d)`
@@ -51,29 +51,29 @@ const (
 	playerv_regex = `(?P<playerv>-?\d+.\d)`
 	playerw_regex = `(?P<playerw>-?\d+.\d)`
 
-	playerremote_regex = `(?P<playerremote>(?:True)|(?:False))`
-	playerhealth_regex = `(?P<playerhealth>\d+)`
-	playerdeaths_regex = `(?P<playerdeaths>\d+)`
-	playerzkills_regex = `(?P<playerzkills>\d+)`
-	playerpkills_regex = `(?P<playerpkills>\d+)`
-	playerscore_regex = `(?P<playerscore>\d+)`
-	playerlevel_regex = `(?P<playerlevel>\d+)`
+	playerremote_regex  = `(?P<playerremote>(?:True)|(?:False))`
+	playerhealth_regex  = `(?P<playerhealth>\d+)`
+	playerdeaths_regex  = `(?P<playerdeaths>\d+)`
+	playerzkills_regex  = `(?P<playerzkills>\d+)`
+	playerpkills_regex  = `(?P<playerpkills>\d+)`
+	playerscore_regex   = `(?P<playerscore>\d+)`
+	playerlevel_regex   = `(?P<playerlevel>\d+)`
 	playersteamid_regex = `(?P<playersteamid>\d+)`
-	playerip_regex = `(?P<playerip>\d+[.]\d+[.]\d+[.]\d+)`
-	playerping_regex = `(?P<playerping>\d+)`
+	playerip_regex      = `(?P<playerip>\d+[.]\d+[.]\d+[.]\d+)`
+	playerping_regex    = `(?P<playerping>\d+)`
 
-	keystonesnum_regex = `(?P<keystonesnum>\d+)`
+	keystonesnum_regex       = `(?P<keystonesnum>\d+)`
 	keystonesprotected_regex = `(?P<keystonesprotected>(False)|(True))`
-	keystoneshardness_regex = `(?P<keystoneshardness>\d+)`
+	keystoneshardness_regex  = `(?P<keystoneshardness>\d+)`
 )
 
 var (
 	//COMPLEX REGULAR EXPRESSIONS
-	date_regex = fmt.Sprintf(`(?P<date>%s-%s-%s)`, year_regex, month_regex, day_regex)
-	time_regex = fmt.Sprintf(`(?P<time>%s:%s:%s)`, hour_regex, minute_regex, second_regex)
+	date_regex     = fmt.Sprintf(`(?P<date>%s-%s-%s)`, year_regex, month_regex, day_regex)
+	time_regex     = fmt.Sprintf(`(?P<time>%s:%s:%s)`, hour_regex, minute_regex, second_regex)
 	datetime_regex = fmt.Sprintf(`%sT%s %s`, date_regex, time_regex, millisecond_regex)
 
-	client_regex = fmt.Sprintf(`(?:client %s)`, steamid_regex)
+	client_regex   = fmt.Sprintf(`(?:client %s)`, steamid_regex)
 	ipclient_regex = fmt.Sprintf(`(?:%s|%s)`, ip_regex, client_regex)
 
 	//player_regex
@@ -104,4 +104,3 @@ var (
 	keystoneendtrigger_regex = fmt.Sprintf(`^Total of %s keystones in the game$`,
 		keystonesnum_regex)
 )
-

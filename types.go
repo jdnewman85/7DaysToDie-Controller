@@ -16,20 +16,20 @@ type triggerFunc func(map[string]string)
 
 type trigger struct {
 	reString string
-	re *regexp.Regexp
+	re       *regexp.Regexp
 	callback triggerFunc
 }
 
 type Player struct {
-	id string
-	name string
+	id      string
+	name    string
 	steamId string
 
 	lastUpdate int64
-	online bool
-	remote bool
-	ip string
-	ping uint64
+	online     bool
+	remote     bool
+	ip         string
+	ping       uint64
 
 	x, y, z float64 //TODO Point types?
 	u, v, w float64
@@ -39,8 +39,8 @@ type Player struct {
 	deaths uint64
 	zKills uint64
 	pKills uint64
-	score uint64
-	level uint64
+	score  uint64
+	level  uint64
 
 	//Added stats
 	blinkLocations []*Point

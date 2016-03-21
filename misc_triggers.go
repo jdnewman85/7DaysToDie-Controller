@@ -47,20 +47,19 @@ func player_trigger(reMatchMap map[string]string) {
 	player.online = true
 }
 
-func keystone_trigger(reMatchMap map[string] string) {
+func keystone_trigger(reMatchMap map[string]string) {
 	fmt.Printf("Listing keystones for: %s(%s) numbering %s protected? %s hardness %s\n",
-	reMatchMap["playername"],
-	reMatchMap["playersteamid"],
-	reMatchMap["keystonesnum"],
-	reMatchMap["keystonesprotected"],
-	reMatchMap["keystoneshardness"])
+		reMatchMap["playername"],
+		reMatchMap["playersteamid"],
+		reMatchMap["keystonesnum"],
+		reMatchMap["keystonesprotected"],
+		reMatchMap["keystoneshardness"])
 
 	keystoneOwner = reMatchMap["playername"]
 	triggers = keystoneTriggers
 }
 
-func keystoneend_trigger(reMatchMap map[string] string) {
+func keystoneend_trigger(reMatchMap map[string]string) {
 	fmt.Printf("Total keystones: %s\n", reMatchMap["keystonesnum"])
 	triggers = mainTriggers
 }
-

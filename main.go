@@ -10,7 +10,7 @@ import (
 
 //GLOBALS
 var (
-	serverConn net.Conn
+	serverConn   net.Conn
 	serverBuffer *bufio.Reader
 
 	//TRIGGER SETUP
@@ -25,8 +25,8 @@ var (
 	}
 
 	keystoneTriggers = []trigger{
-		//trigger{keystonetrigger_regex, nil, keystone_trigger},
-		//trigger{keystoneendtrigger_regex, nil, keystoneend_trigger},
+	//trigger{keystonetrigger_regex, nil, keystone_trigger},
+	//trigger{keystoneendtrigger_regex, nil, keystoneend_trigger},
 	}
 
 	triggers []trigger
@@ -36,24 +36,22 @@ var (
 
 var (
 	//NOTE: Storing a reference from name, steamid, and id in same map
-	playerMap map[string]*Player = make(map[string]*Player)
+	playerMap    map[string]*Player = make(map[string]*Player)
 	milliseconds int64
 )
 
 var (
-	spawnPoints []Point
+	spawnPoints   []Point
 	mainBaseHorde bool
-	zombieNum int64
-	zombies = []int{ 1,  2,  3,  4,  5,  6,
-			 7,  8,  9, 10, 11, 12,
-			13, 14, 15, 16, 17, 18,
-			19, 20,
-			27,
-			35, 36,
-		}
+	zombieNum     int64
+	zombies       = []int{1, 2, 3, 4, 5, 6,
+		7, 8, 9, 10, 11, 12,
+		13, 14, 15, 16, 17, 18,
+		19, 20,
+		27,
+		35, 36,
+	}
 )
-
-
 
 //MAIN
 func main() {
@@ -111,11 +109,8 @@ func main() {
 			}
 		}
 
-
 		//fmt.Printf("SERVER: '%s'\n", line)
 	}
 
-
 	fmt.Println("END")
 }
-

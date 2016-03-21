@@ -28,7 +28,6 @@ func player_command_trigger(reMatchMap map[string]string) {
 			//TODO z position?
 			fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(blinkLocation.x), int(blinkLocation.y), int(blinkLocation.z)+2) //TODO TEMP Magic number
 		}
-	}
 
 	//MISC
 	case "whoami":
@@ -36,4 +35,5 @@ func player_command_trigger(reMatchMap map[string]string) {
 		player := playerMap[playerName]
 
 		fmt.Fprintf(serverConn, "pm %s \"You are %s, a player.\"\n", player.name, player.name)
+	} //Switch end
 }

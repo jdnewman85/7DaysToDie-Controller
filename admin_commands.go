@@ -77,7 +77,6 @@ func admin_command_trigger(reMatchMap map[string]string) {
 	case "stopMainBaseHorde", "pm smbh":
 		fmt.Printf("Main Base Horde Off\n")
 		mainBaseHorde = false
-	}
 
 	//MISC
 	case "whoami":
@@ -85,4 +84,5 @@ func admin_command_trigger(reMatchMap map[string]string) {
 			player := playerMap[reMatchMap["steamid"]]
 			fmt.Fprintf(serverConn, "pm %s \"You are %s, an admin.\"\n", player.name, player.name)
 		}
+	} //Switch end
 }

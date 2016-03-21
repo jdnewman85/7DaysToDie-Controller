@@ -13,13 +13,28 @@ func admin_command_trigger(reMatchMap map[string]string) {
 	fmt.Printf("reMatchMap:'\n%v\n'\n", reMatchMap)
 
 	switch reMatchMap["command"] {
-	case "whoami":
+	//HOME
+	case "blink":
+		//TEMP TODO make different system
+		fmt.Printf("Blink Command!\n")
+
 		if reMatchMap["steamid"] != "" {
 			player := playerMap[reMatchMap["steamid"]]
-			fmt.Fprintf(serverConn, "pm %s \"You are %s, an admin.\"\n", player.name, player.name)
+
+			if player.blinkLocations == nil {
+				//No points
+				//TODO TEMP Diff
+				player.blinkLocations = append(player.blinkLocations, &Point{player.x, player.y, player.z})
+			} else {
+				blinkLocation := player.blinkLocations[0]
+				//Points
+				//TODO TEMP for now, just go to first
+				//TODO z position?
+				fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(blinkLocation.x), int(blinkLocation.y), int(blinkLocation.z)+2) //TODO TEMP Magic number
+			}
 		}
-	case "lp":
-		fmt.Fprintf(serverConn, "%s\n", "lp")
+
+	//SPAWN/HORDE TESTS
 	case "storeSpawnPoint", "pm ssp":
 		if reMatchMap["steamid"] != "" {
 			player := playerMap[reMatchMap["steamid"]]
@@ -54,30 +69,20 @@ func admin_command_trigger(reMatchMap map[string]string) {
 			//Restore position
 			fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(tempX), int(tempY), int(tempZ))
 		}
+
+	//HORDE
 	case "mainBaseHorde", "pm mbh":
 		fmt.Printf("Main Base Horde On\n")
 		mainBaseHorde = true
 	case "stopMainBaseHorde", "pm smbh":
 		fmt.Printf("Main Base Horde Off\n")
 		mainBaseHorde = false
-	case "blink":
-		//TEMP TODO make different system
-		fmt.Printf("Blink Command!\n")
+	}
 
+	//MISC
+	case "whoami":
 		if reMatchMap["steamid"] != "" {
 			player := playerMap[reMatchMap["steamid"]]
-
-			if player.blinkLocations == nil {
-				//No points
-				//TODO TEMP Diff
-				player.blinkLocations = append(player.blinkLocations, &Point{player.x, player.y, player.z})
-			} else {
-				blinkLocation := player.blinkLocations[0]
-				//Points
-				//TODO TEMP for now, just go to first
-				//TODO z position?
-				fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(blinkLocation.x), int(blinkLocation.y), int(blinkLocation.z)+2) //TODO TEMP Magic number
-			}
+			fmt.Fprintf(serverConn, "pm %s \"You are %s, an admin.\"\n", player.name, player.name)
 		}
-	}
 }

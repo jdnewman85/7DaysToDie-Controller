@@ -8,23 +8,6 @@ import (
 )
 
 //THREAD FUNCTIONS
-func updatePlayerInfo_thread() {
-	//Periodically sends listplayers command, to update player information
-	for {
-		fmt.Fprintf(serverConn, "%s\n", "lp")
-		fmt.Fprintf(serverConn, "%s\n", "listlandprotection") //OPT TODO Move this
-		time.Sleep(time.Second * 1)
-
-		//TEMP DEBUG
-		/*
-			fmt.Printf("\n\n\n%v\n", playerMap)
-			for _, player := range playerMap {
-				fmt.Printf("%v\n", player)
-			}
-		*/
-	}
-}
-
 func mainBaseHorde_thread() {
 	for {
 		if mainBaseHorde {
@@ -57,3 +40,21 @@ func mainBaseHorde_thread() {
 		time.Sleep(time.Second)
 	}
 }
+
+func updatePlayerInfo_thread() {
+	//Periodically sends listplayers command, to update player information
+	for {
+		fmt.Fprintf(serverConn, "%s\n", "lp")
+		fmt.Fprintf(serverConn, "%s\n", "listlandprotection") //OPT TODO Move this
+		time.Sleep(time.Second * 1)
+
+		//TEMP DEBUG
+		/*
+			fmt.Printf("\n\n\n%v\n", playerMap)
+			for _, player := range playerMap {
+				fmt.Printf("%v\n", player)
+			}
+		*/
+	}
+}
+

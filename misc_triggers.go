@@ -5,10 +5,21 @@ import (
 	"strconv"
 )
 
-func tick_trigger(reMatchMap map[string]string) {
-	fmt.Printf("TICK!\n")
-	milliseconds, _ = strconv.ParseInt(reMatchMap["milliseconds"], 10, 64)
-	zombieNum, _ = strconv.ParseInt(reMatchMap["zombienum"], 10, 64)
+func keystone_trigger(reMatchMap map[string]string) {
+	fmt.Printf("Listing keystones for: %s(%s) numbering %s protected? %s hardness %s\n",
+		reMatchMap["playername"],
+		reMatchMap["playersteamid"],
+		reMatchMap["keystonesnum"],
+		reMatchMap["keystonesprotected"],
+		reMatchMap["keystoneshardness"])
+
+	keystoneOwner = reMatchMap["playername"]
+	triggers = keystoneTriggers
+}
+
+func keystoneend_trigger(reMatchMap map[string]string) {
+	fmt.Printf("Total keystones: %s\n", reMatchMap["keystonesnum"])
+	triggers = mainTriggers
 }
 
 func player_trigger(reMatchMap map[string]string) {
@@ -47,19 +58,9 @@ func player_trigger(reMatchMap map[string]string) {
 	player.online = true
 }
 
-func keystone_trigger(reMatchMap map[string]string) {
-	fmt.Printf("Listing keystones for: %s(%s) numbering %s protected? %s hardness %s\n",
-		reMatchMap["playername"],
-		reMatchMap["playersteamid"],
-		reMatchMap["keystonesnum"],
-		reMatchMap["keystonesprotected"],
-		reMatchMap["keystoneshardness"])
-
-	keystoneOwner = reMatchMap["playername"]
-	triggers = keystoneTriggers
+func tick_trigger(reMatchMap map[string]string) {
+	fmt.Printf("TICK!\n")
+	milliseconds, _ = strconv.ParseInt(reMatchMap["milliseconds"], 10, 64)
+	zombieNum, _ = strconv.ParseInt(reMatchMap["zombienum"], 10, 64)
 }
 
-func keystoneend_trigger(reMatchMap map[string]string) {
-	fmt.Printf("Total keystones: %s\n", reMatchMap["keystonesnum"])
-	triggers = mainTriggers
-}

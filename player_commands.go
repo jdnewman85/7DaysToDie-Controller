@@ -11,11 +11,7 @@ func player_command_trigger(reMatchMap map[string]string) {
 	fmt.Printf("reMatchMap:'\n%v\n'\n", reMatchMap)
 
 	switch reMatchMap["command"] {
-	case "whoami":
-		playerName := reMatchMap["playername"]
-		player := playerMap[playerName]
-
-		fmt.Fprintf(serverConn, "pm %s \"You are %s, a player.\"\n", player.name, player.name)
+	//HOME
 	case "blink":
 		//TEMP TODO make different system
 		fmt.Printf("Blink Command!\n")
@@ -33,4 +29,11 @@ func player_command_trigger(reMatchMap map[string]string) {
 			fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(blinkLocation.x), int(blinkLocation.y), int(blinkLocation.z)+2) //TODO TEMP Magic number
 		}
 	}
+
+	//MISC
+	case "whoami":
+		playerName := reMatchMap["playername"]
+		player := playerMap[playerName]
+
+		fmt.Fprintf(serverConn, "pm %s \"You are %s, a player.\"\n", player.name, player.name)
 }

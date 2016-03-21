@@ -1,4 +1,7 @@
 DOING
+	My program neeeds to attempt connections in a loop until ended
+		Maybe 5 second or 10 second intervals?
+	Need to organize based on function, so all stuff for a particular command in it's own file
 	Get land claim blocks read in properly
 	Make land claim blocks the teleport areas
 		Shareable?

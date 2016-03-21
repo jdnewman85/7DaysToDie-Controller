@@ -1,3 +1,24 @@
+DOING
+	Add command hotword, and change this for dev->release instances
+	Get land claim blocks read in properly
+	Make land claim blocks the teleport areas
+		Shareable?
+			If so, they need a maturation time
+				and a limit to how many
+				With a way to build them, or summon(for start?)
+	Add permission setting automatically (for appropriate keywords)
+		NO!, just use the denied commands!
+	Remove current blink and replace later with fixed version and different instances
+	More modules! Need everything compartmentalized and streamy?
+	Add server restart
+		Save world
+		Shutdown
+	Add a getPlayer or similar command for the triggers
+	Add a sendPlayerMessage or similar command for the triggers
+	Add AFK
+
+
+
 NEW COMMANDS AND STUFFS
 	Can now specifiy quality of items to give
 		Still dropped by player?

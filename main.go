@@ -72,10 +72,14 @@ const (
 
 	millisecond_regex = `(?P<millisecond>\d+.\d*)`
 
-	//command_regex
-	by_regex = `(?P<by>\w+)`
+	//*_command_regex
 	ip_regex = `(?:(?P<ip>\d+[.]\d+[.]\d+[.]\d+)(?::(?P<port>\d+))?)`
 	steamid_regex = `(?P<steamid>\d+)`
+
+	by_regex = `(?P<by>\w+)`
+	//hotword_regex = `(?P<hotword>/w+)` //Gets any hotword
+	admin_hotword_regex = `(?P<hotword>re)`
+	player_hotword_regex = `(?P<hotword>pm)`
 
 	//tick_regex
 	gametime_regex = `(?P<gametime>\d+.\d\d)m`
@@ -133,14 +137,15 @@ var (
 	playerrotation_regex = fmt.Sprintf(`(?P<playerrotation>\(%s, %s, %s\))`,
 		playeru_regex, playerv_regex, playerw_regex)
 
-	//denied_command_regex
 	//TODO Make command a simple regex above?
-	denied_command_regex = fmt.Sprintf(`^%s INF Denying command '(?P<command>.+)' from client %s$`,
-		datetime_regex, playername_regex)
-	//command_regex
-	command_regex = fmt.Sprintf(`^%s INF Executing command '(?P<command>.+)' (?:by %s )?from %s$`,
-		datetime_regex, by_regex, ipclient_regex)
+	//admin_command_regex
+	admin_command_regex = fmt.Sprintf(`^%s INF Executing command '%s (?P<command>.+)' (?:by %s )?from %s$`,
+		datetime_regex, admin_hotword_regex, by_regex, ipclient_regex)
+	//player_command_regex
+	player_command_regex = fmt.Sprintf(`^%s INF Denying command '%s (?P<command>.+)' from client %s$`,
+		datetime_regex, player_hotword_regex, playername_regex)
 
+	//tick_regex
 	tick_regex = fmt.Sprintf(`^%s INF Time: %s FPS: %s Heap: %s Max: %s Chunks: %s CGO: %s Ply: %s Zom: %s Ent: %s %s Items: %s$`,
 		datetime_regex, gametime_regex, fps_regex, heap_regex, maxheap_regex, chunks_regex, cgo_regex, playernum_regex, zombienum_regex, entitynum_regex, entitynumpar_regex, itemnum_regex)
 
@@ -161,11 +166,12 @@ var (
 	serverConn net.Conn
 	serverBuffer *bufio.Reader
 
+	//TRIGGER SETUP
 	mainTriggers = []trigger{
 		trigger{`^Please enter password:$`, nil, password_trigger},
 		trigger{`^Logon successful.$`, nil, login_trigger},
-		trigger{command_regex, nil, command_trigger},
-		trigger{denied_command_regex, nil, command_trigger}, //TODO TEMP Dif function for player commands?
+		trigger{admin_command_regex, nil, admin_command_trigger},
+		trigger{player_command_regex, nil, player_command_trigger},
 		trigger{tick_regex, nil, tick_trigger},
 		trigger{player_regex, nil, player_trigger},
 		trigger{keystonetrigger_regex, nil, keystone_trigger},
@@ -206,6 +212,7 @@ var (
 func main() {
 	triggers = mainTriggers
 	fmt.Println("BEGIN")
+	fmt.Println("keystonetrigger_regex:")
 	fmt.Printf("\n\n\n%s\n\n\n", keystonetrigger_regex)
 
 	//Compile trigger regexps
@@ -246,7 +253,11 @@ func main() {
 				matchMap := make(map[string]string)
 				matchNames := triggers[i].re.SubexpNames()
 				for j, match := range matches {
-					matchMap[matchNames[j]] = match
+					matchName := matchNames[j]
+					if matchName == "" {
+						matchName = "$" //TODO TEMP Change to something else for the full trigger text?
+					}
+					matchMap[matchName] = match
 				}
 				//Run the trigger
 				triggers[i].callback(matchMap)
@@ -273,27 +284,34 @@ func login_trigger(reMatchMap map[string]string) {
 	fmt.Println("Waiting for commands.")
 }
 
-//COMMANDS
-func command_trigger(reMatchMap map[string]string) {
-	fmt.Printf("Recieved a command: %s\n", reMatchMap["command"])
+//ADMIN COMMANDS
+func admin_command_trigger(reMatchMap map[string]string) {
+	//OPT should go ahead and get player object above case, or provide a simple access function for it
+	fmt.Printf("Recieved an admin command: %s\n", reMatchMap["command"])
 	switch reMatchMap["command"] {
-	case "pm lp":
+	case "whoami":
+		fmt.Printf("reMatchMap:'\n%v\n'\n", reMatchMap)
+		if reMatchMap["steamid"] != "" {
+			player := playerMap[reMatchMap["steamid"]]
+			fmt.Fprintf(serverConn, "pm %s \"You are %s, an admin.\"\n", player.name, player.name)
+		}
+	case "lp":
 		fmt.Fprintf(serverConn, "%s\n", "lp")
-	case "pm storeSpawnPoint", "pm ssp":
+	case "storeSpawnPoint", "pm ssp":
 		if reMatchMap["steamid"] != "" {
 			player := playerMap[reMatchMap["steamid"]]
 			fmt.Fprintf(serverConn, "pm %s \"Point Added\"\n", player.name)
 			spawnPoints = append(spawnPoints, Point{player.x, player.y, player.z})
 			fmt.Printf("SPAWN POINTS: \n%v\n\n", spawnPoints)
 		}
-	case "pm resetSpawnPoints", "pm rsp":
+	case "resetSpawnPoints", "pm rsp":
 		if reMatchMap["steamid"] != "" {
 			player := playerMap[reMatchMap["steamid"]]
 			fmt.Fprintf(serverConn, "pm %s \"Spawn Points Reset\"\n", player.name)
 			spawnPoints = nil
 			fmt.Printf("SPAWN POINTS: \n%v\n\n", spawnPoints)
 		}
-	case "pm spawnTest", "pm st":
+	case "spawnTest", "pm st":
 		fmt.Printf("SPAWN TEST\n")
 		if reMatchMap["steamid"] != "" {
 			player := playerMap[reMatchMap["steamid"]]
@@ -313,15 +331,48 @@ func command_trigger(reMatchMap map[string]string) {
 			//Restore position
 			fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(tempX), int(tempY), int(tempZ))
 		}
-	case "pm mainBaseHorde", "pm mbh":
+	case "mainBaseHorde", "pm mbh":
 		fmt.Printf("Main Base Horde On\n")
 		mainBaseHorde = true
-	case "pm stopMainBaseHorde", "pm smbh":
+	case "stopMainBaseHorde", "pm smbh":
 		fmt.Printf("Main Base Horde Off\n")
 		mainBaseHorde = false
-	case "pm blink":
-					fmt.Printf("Blink Command!\n")
+	case "blink":
+		//TEMP TODO make different system
+		fmt.Printf("Blink Command!\n")
+
+		if reMatchMap["steamid"] != "" {
+			player := playerMap[reMatchMap["steamid"]]
+
+			if player.blinkLocations == nil {
+				//No points
+				//TODO TEMP Diff
+				player.blinkLocations = append(player.blinkLocations, &Point{player.x, player.y, player.z})
+			} else {
+				blinkLocation := player.blinkLocations[0]
+				//Points
+				//TODO TEMP for now, just go to first
+				//TODO z position?
+				fmt.Fprintf(serverConn, "tele %s %d %d %d\n", player.id, int(blinkLocation.x), int(blinkLocation.y), int(blinkLocation.z)+2) //TODO TEMP Magic number
+			}
+		}
+	}
+}
+
+//PLAYER COMMANDS
+func player_command_trigger(reMatchMap map[string]string) {
+	fmt.Printf("Recieved a player command: %s\n", reMatchMap["command"])
+	switch reMatchMap["command"] {
+	case "whoami":
+		if reMatchMap["steamid"] != "" {
+			playerName := reMatchMap["playername"] //OPT Need whitespace
+			player := playerMap[playerName]
+
+			fmt.Fprintf(serverConn, "pm %s \"You are %s, a player.\"\n", player.name, player.name)
+		}
+	case "blink":
 					//TEMP TODO make different system
+					fmt.Printf("Blink Command!\n")
 					playerName := reMatchMap["playername"] //OPT Need whitespace
 					player := playerMap[playerName]
 					if player.blinkLocations == nil {

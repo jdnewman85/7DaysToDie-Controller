@@ -65,8 +65,7 @@ func reboot_thread() {
 		time.Sleep(time.Second * 1)
 	}
 
-	fmt.Fprintf(serverConn, "kickall Bye!\n")
 	fmt.Fprintf(serverConn, "saveworld")
-	time.Sleep(time.Second * 5)
+	fmt.Fprintf(serverConn, "kickall Bye!\n")
 	fmt.Fprintf(serverConn, "shutdown")
 }

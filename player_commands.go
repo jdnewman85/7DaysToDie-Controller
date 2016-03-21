@@ -35,6 +35,7 @@ func player_command_trigger(reMatchMap map[string]string) {
 		player := playerMap[playerName]
 
 		fmt.Fprintf(serverConn, "say \"%s has started a reboot\"\n", player.name)
+		go reboot_thread()
 	case "whoami":
 		playerName := reMatchMap["playername"]
 		player := playerMap[playerName]

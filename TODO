@@ -1,5 +1,4 @@
 DOING
-	Add command hotword, and change this for dev->release instances
 	Get land claim blocks read in properly
 	Make land claim blocks the teleport areas
 		Shareable?
@@ -16,6 +15,7 @@ DOING
 	Add a getPlayer or similar command for the triggers
 	Add a sendPlayerMessage or similar command for the triggers
 	Add AFK
+	Alter INF/loglevel to what is needed?
 
 
 
@@ -112,6 +112,8 @@ Done
 	Don't use a switch
 		Use a list of regexps that get itterated through on a newline event
 		/This was implemented as triggers/
+	Add command hotword, and change this for dev->release instances
+		Used admin vs player keywords
 
 Discarded
 	State Machine
